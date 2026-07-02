@@ -1,5 +1,5 @@
 import type { Track } from "./types.js";
-import type { MusicProvider } from "./music/provider.js";
+import type { MusicCatalog } from "./music/provider.js";
 
 export interface YandexTrackRef {
   albumId: string | null;
@@ -74,7 +74,7 @@ function decodeEntities(s: string): string {
 /** Resolve a Yandex Music link to the best-matching track in the active provider. */
 export async function matchYandexLink(
   link: string,
-  provider: MusicProvider
+  provider: MusicCatalog
 ): Promise<Track | null> {
   const ref = parseYandexLink(link);
   if (!ref) return null;

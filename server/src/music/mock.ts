@@ -1,5 +1,5 @@
 import type { Track } from "../types.js";
-import type { MusicProvider } from "./provider.js";
+import type { MusicCatalog } from "./provider.js";
 
 const CATALOG: Track[] = [
   { id: "m1", title: "Bohemian Rhapsody", artist: "Queen", album: "A Night at the Opera", artworkUrl: null, durationMs: 354000 },
@@ -13,7 +13,7 @@ const CATALOG: Track[] = [
 ];
 
 /** In-memory provider used when Apple Music credentials are not configured (demo mode). */
-export class MockMusicProvider implements MusicProvider {
+export class MockMusicProvider implements MusicCatalog {
   readonly name = "mock";
 
   async search(query: string, limit = 10): Promise<Track[]> {
@@ -21,5 +21,9 @@ export class MockMusicProvider implements MusicProvider {
     return CATALOG.filter(
       (t) => t.title.toLowerCase().includes(q) || t.artist.toLowerCase().includes(q)
     ).slice(0, limit);
+  }
+
+  async getTrack(trackId: string): Promise<Track | null> {
+    return CATALOG.find((t) => t.id === trackId) ?? null;
   }
 }

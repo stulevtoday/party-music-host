@@ -1,6 +1,12 @@
 import { randomUUID } from "node:crypto";
 import type { PartyState, PlaybackState, QueueItem, Track } from "./types.js";
 
+export const MAX_QUEUE_LENGTH = 50;
+
+export type EnqueueResult =
+  | { ok: true; item: QueueItem }
+  | { ok: false; reason: "duplicate" | "queue_full" };
+
 /**
  * Core party state machine: queue, votes, current track.
  * Pure domain logic — no transport concerns, easy to test.
@@ -38,7 +44,13 @@ export class Party {
     return Math.max(1, Math.ceil(this.guests.size / 2));
   }
 
-  enqueue(track: Track, requestedBy: string): QueueItem {
+  /** One track = one entry: rejects tracks already playing or queued. */
+  enqueue(track: Track, requestedBy: string): EnqueueResult {
+    if (this.queue.length >= MAX_QUEUE_LENGTH) return { ok: false, reason: "queue_full" };
+    const isDuplicate =
+      this.playback.current?.track.id === track.id ||
+      this.queue.some((q) => q.track.id === track.id);
+    if (isDuplicate) return { ok: false, reason: "duplicate" };
     const item: QueueItem = {
       entryId: randomUUID(),
       track,
@@ -51,7 +63,7 @@ export class Party {
     this.queue.push(item);
     if (this.playback.status === "idle") this.advance();
     else this.onChange();
-    return item;
+    return { ok: true, item };
   }
 
   /** Toggle an upvote; queue is kept ordered by votes then request time. */
@@ -85,6 +97,10 @@ export class Party {
 
   /** Host reports the current track finished (or was skipped locally). */
   trackEnded(): void {
+    this.advance();
+  }
+
+  skip(): void {
     this.advance();
   }
 

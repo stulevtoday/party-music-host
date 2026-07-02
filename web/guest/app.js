@@ -1,5 +1,6 @@
 const $ = (id) => document.getElementById(id);
 const guestName = localStorage.guestName || (localStorage.guestName = "Гость-" + Math.floor(Math.random() * 1000));
+const deviceId = localStorage.deviceId || (localStorage.deviceId = crypto.randomUUID());
 
 let state = null;
 let ws;
@@ -96,11 +97,16 @@ function renderResults(tracks, error) {
     div.querySelector(".title").textContent = t.title;
     div.querySelector(".muted").textContent = t.artist;
     div.querySelector("button").onclick = async () => {
-      await fetch("/api/queue", {
+      const res = await fetch("/api/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ track: t, guestName })
+        body: JSON.stringify({ track: t, guestName, deviceId })
       });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        renderResults([], body.error || "Не удалось заказать трек");
+        return;
+      }
       $("search-input").value = "";
       renderResults([]);
     };

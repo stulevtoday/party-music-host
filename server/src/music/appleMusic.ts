@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import type { Track } from "../types.js";
-import type { MusicProvider } from "./provider.js";
+import type { MusicCatalog } from "./provider.js";
 
 export interface AppleMusicConfig {
   teamId: string;
@@ -25,7 +25,7 @@ interface CatalogSong {
  * Official Apple Music API client (https://api.music.apple.com).
  * Uses a developer token (ES256 JWT) — no scraping, no UI automation.
  */
-export class AppleMusicProvider implements MusicProvider {
+export class AppleMusicProvider implements MusicCatalog {
   readonly name = "apple-music";
   private token: { value: string; expiresAt: number } | null = null;
 
@@ -61,6 +61,18 @@ export class AppleMusicProvider implements MusicProvider {
       results?: { songs?: { data?: CatalogSong[] } };
     };
     return (body.results?.songs?.data ?? []).map(toTrack);
+  }
+
+  async getTrack(trackId: string): Promise<Track | null> {
+    const url = `https://api.music.apple.com/v1/catalog/${this.config.storefront}/songs/${encodeURIComponent(trackId)}`;
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${this.developerToken()}` }
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error(`Apple Music lookup failed: ${res.status}`);
+    const body = (await res.json()) as { data?: CatalogSong[] };
+    const song = body.data?.[0];
+    return song ? toTrack(song) : null;
   }
 }
 

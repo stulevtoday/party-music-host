@@ -45,6 +45,28 @@ npm run dev
 Для Apple Music нужны: аккаунт Apple Developer, MusicKit-ключ (`.p8`), Team ID,
 Key ID и активная подписка Apple Music на аккаунте хоста.
 
+## API
+
+| Метод | Путь | Описание |
+|---|---|---|
+| GET/POST | `/api/search?q=` | поиск треков (Apple Music или mock) |
+| POST | `/api/request` | заказ трека `{track, guestName, deviceId}`; лимит 1 заказ/5с на устройство, без дублей, очередь ≤ 50 |
+| GET | `/api/queue` | текущая очередь + порог скипа |
+| POST | `/api/vote` | апвоут `{entryId, deviceId}` (toggle) |
+| POST | `/api/skip` | голос за скип `{deviceId}` |
+| GET | `/api/now-playing` | текущий трек и позиция |
+| GET | `/api/history` | история заказов (также пишется в `data/history.jsonl`) |
+| POST | `/api/yandex-link` | резолв ссылки Яндекс.Музыки `{link}` |
+
+WebSocket `/ws`: сервер шлёт `state` (полный снимок), `queue_changed`,
+`now_playing_changed`, `play` (host); клиенты — `hello`, `upvote`, `voteSkip`,
+`removeEntry`/`playbackUpdate`/`trackEnded` (host). Типы — `server/src/types.ts`.
+
+Music engine (`server/src/music/`): интерфейс `MusicProvider`
+(`search`, `getTrack`, `play`, `addToQueue`, `getNowPlaying`) — реализация
+`PartyMusicEngine` поверх каталога (`AppleMusicProvider` | `MockMusicProvider`)
+и host-плеера.
+
 ## Команды
 
 ```bash

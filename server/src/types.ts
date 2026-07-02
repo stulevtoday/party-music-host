@@ -35,9 +35,27 @@ export interface PartyState {
   skipThreshold: number;
 }
 
+export interface Device {
+  deviceId: string;
+  name: string;
+  lastSeenAt: number;
+}
+
+export interface RequestHistoryEntry {
+  track: Track;
+  deviceId: string;
+  requestedBy: string;
+  requestedAt: number;
+  accepted: boolean;
+  reason?: string;
+}
+
 /** Messages broadcast from server to all clients */
 export type ServerEvent =
   | { type: "state"; state: PartyState }
+  | { type: "queue_changed"; queue: QueueItem[]; skipThreshold: number }
+  | { type: "now_playing_changed"; playback: PlaybackState }
+  | { type: "play"; trackId: string } // host only: play a specific track now
   | { type: "error"; message: string };
 
 /** Messages sent by clients over WebSocket */

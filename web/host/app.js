@@ -16,6 +16,7 @@ function connect() {
   ws.onmessage = (e) => {
     const msg = JSON.parse(e.data);
     if (msg.type === "state") { state = msg.state; onState(); }
+    if (msg.type === "play") playNow(msg.trackId);
   };
   ws.onclose = () => setTimeout(connect, 1500);
 }
@@ -91,6 +92,16 @@ function startMockPlayback(item) {
     if (pos >= durationMs) { stopLocal(); trackEnded(); return; }
     ws.send(JSON.stringify({ type: "playbackUpdate", status: "playing", positionMs: pos }));
   }, 1000);
+}
+
+/* Server-initiated playback (MusicProvider.play over WebSocket). */
+async function playNow(trackId) {
+  if (mode === "apple" && music && music.isAuthorized) {
+    await music.setQueue({ song: trackId });
+    await music.play();
+  } else {
+    startMockPlayback({ track: { id: trackId, durationMs: 90000 } });
+  }
 }
 
 function stopLocal() {
