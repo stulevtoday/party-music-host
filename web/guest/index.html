@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PartyMusicHost</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>🎉 PartyMusicHost</h1>
+    <div id="status" class="muted">подключение…</div>
+  </header>
+
+  <section id="now-playing" class="card hidden">
+    <div class="label">Сейчас играет</div>
+    <div class="track">
+      <img id="np-art" alt="" />
+      <div>
+        <div id="np-title" class="title"></div>
+        <div id="np-artist" class="muted"></div>
+      </div>
+    </div>
+    <button id="skip-btn">⏭ Голос за скип (<span id="skip-count">0</span>/<span id="skip-need">1</span>)</button>
+  </section>
+
+  <section class="card">
+    <div class="label">Заказать трек</div>
+    <input id="search-input" placeholder="Поиск в Apple Music или ссылка Яндекс.Музыки" />
+    <div id="search-results"></div>
+  </section>
+
+  <section class="card">
+    <div class="label">Очередь</div>
+    <ul id="queue"></ul>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

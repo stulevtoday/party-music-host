@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PartyMusicHost — Host Player</title>
+  <link rel="stylesheet" href="/style.css" />
+  <script src="https://js-cdn.music.apple.com/musickit/v3/musickit.js" data-web-components async></script>
+</head>
+<body>
+  <header>
+    <h1>🎛 Host Player</h1>
+    <div id="status" class="muted">подключение…</div>
+  </header>
+
+  <section class="card">
+    <div class="label">Плеер (Mac)</div>
+    <div class="track">
+      <img id="np-art" alt="" />
+      <div>
+        <div id="np-title" class="title">—</div>
+        <div id="np-artist" class="muted"></div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button id="authorize-btn">Войти в Apple Music</button>
+      <button id="play-btn" class="secondary">▶︎ / ⏸</button>
+      <button id="next-btn" class="secondary">⏭ Далее</button>
+    </div>
+    <p class="muted" style="margin-bottom:0">
+      Вывод на Apple TV / HomePod: выберите их как AirPlay-выход в macOS
+      (Пункт управления → Звук) — весь звук плеера пойдёт туда.
+    </p>
+  </section>
+
+  <section class="card">
+    <div class="label">Очередь</div>
+    <ul id="queue"></ul>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
