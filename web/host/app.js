@@ -84,7 +84,7 @@ async function onState() {
 /* Demo mode: simulate playback with a timer so the queue advances. */
 function startMockPlayback(item) {
   stopLocal();
-  const durationMs = Math.min(item.track.durationMs || 15000, 15000);
+  const durationMs = Math.min(item.track.durationMs || 90000, 90000);
   const startedAt = Date.now();
   mockTimer = setInterval(() => {
     const pos = Date.now() - startedAt;
